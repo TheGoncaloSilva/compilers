@@ -1,3 +1,8 @@
+/* Cool website for regex: https://regex101.com/
+ * Anottations:
+ *  - Double support is not implemented consistently in regex
+ *  - No Tree of operations, which means that cascade operations are limited
+ */
 import java.util.Scanner;
 import java.util.HashMap;
 
@@ -5,63 +10,109 @@ public class ex_1_2 {
     public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
         System.out.println("NOTE: Don't forget to use ',' instead of '.'!");
-        var exp = new HashMap<String, Double>();
+        var assoc = new HashMap<String, Double>();
 
-        while(true){
-            System.out.println("-> ");
+        while(sc.hasNextLine()){
             String line = sc.nextLine();
             
-            // Regular attribution, ex: n = 10, n + 5
-            if(line.matches("/[a-z]\\s*=\\s*\\d+/gm")){
+            // Variable instant calculation, ex: n + 5
+            if(line.matches("[a-z]\\s*[-+*/]\\s*\\d+")){
+                var elements = line.split(" ");
+                if(elements.length != 3){
+                    System.err.println("Prompt not in correct format");
+                    continue;
+                }
+                if(!assoc.containsKey(elements[0])){
+                    System.err.printf("The variable %s is null\n", elements[0]);
+                    continue;
+                }
+                double result = calculate(assoc.get(elements[0]), elements[1], Double.parseDouble(elements[2]));
+                System.out.printf("-> %3.2f\n", result);
 
-            // Basic calculation, ex: 1,2 + 1,2
-            }else if(line.matches("\\d*,\\d*\\s*[-+*/]\\s*\\d*,\\d*/gm")){
-
-            }
+            // Variable instant calculation, 4 * n
+            }else if(line.matches("\\d+\\s*[-+*/]\\s*[a-z]")){
+                var elements = line.split(" ");
+                if(elements.length != 3){
+                    System.err.println("Prompt not in correct format");
+                    continue;
+                }
+                if(!assoc.containsKey(elements[2])){
+                    System.err.printf("The variable %s is null\n", elements[2]);
+                    continue;
+                }
+                double result = calculate(Double.parseDouble(elements[0]), elements[1], assoc.get(elements[2]));
+                System.out.printf("-> %3.2f\n", result);
                 
-        	if(sc.hasNextDouble()){
-                if(state == 1){
-                    value1 = sc.nextDouble();
-                    state++;
-                }else if(state == 3){
-                    value2 = sc.nextDouble();
-                    calculate(value1, operand, value2);
-                    // reset
-                    state = 1;
-                }else{
-                    System.err.println("The input is not in correct format");
-                    break;
+            // Basic calculation, ex: 1,2 + 1,2
+            }else if(line.matches("\\d*,\\d*\\s*[-+*/]\\s*\\d*,\\d*")){
+                var elements = line.split(" ");
+                if(elements.length != 3){
+                    System.err.println("Prompt not in correct format");
+                    continue;
                 }
+                calculate(Double.parseDouble(elements[0]), elements[1], Double.parseDouble(elements[2]));
+
+            // Simple Attribution, ex: n = 1
+            }else if(line.matches("[a-z]\\s*=\\s*\\d+")){
+                var elements = line.split(" ");
+                if(elements.length != 3){
+                    System.err.println("Prompt not in correct format");
+                    continue;
+                }
+                assoc.put(elements[0], Double.parseDouble(elements[2]));
+
+            // Complex Attribution, ex: n = n + 1
+            }else if(line.matches("[a-z]\\s*=\\s*[a-z]\\s*[-+*/]\\s*\\d+")){
+                var elements = line.split(" ");
+                if(elements.length != 5){
+                    System.err.println("Prompt not in correct format");
+                    continue;
+                }
+                if(!assoc.containsKey(elements[2])){
+                    System.err.printf("The variable %s is null\n", elements[2]);
+                    continue;
+                }
+                double value = calculate(assoc.get(elements[2]), elements[3], Double.parseDouble(elements[4]));
+                assoc.put(elements[0], value);
+
+            // Complex Attribution, ex: n = 1 + n
+            }else if(line.matches("[a-z]\\s*=\\s*\\d+\\s*[-+*/]\\s*[a-z]")){
+                var elements = line.split(" ");
+                if(elements.length != 5){
+                    System.err.println("Prompt not in correct format");
+                    continue;
+                }
+                if(!assoc.containsKey(elements[4])){
+                    System.err.printf("The variable %s is null\n", elements[2]);
+                    continue;
+                }
+                double value = calculate(Double.parseDouble(elements[2]), elements[3], assoc.get(elements[4]));
+                assoc.put(elements[0], value);
+
+            // Check value
+            }else if(line.matches("[a-z]")){
+                if(!assoc.containsKey(line)){
+                    System.err.printf("The variable %s is null\n", line);
+                    continue;
+                }
+                System.out.printf("-> %3.2f\n", assoc.get(line));
             }else{
-                if(state == 2){
-                    state++;
-                    operand = sc.next();
-                    if(!operand.matches("[=-+*/]")){
-                        System.err.println("Unknow operand");
-                        break;
-                    }
-                    
-                }else{
-                    System.err.println("The provided input is not in correct format");
-                    break;
-                }
+                System.out.println("Unrecognized Operation");
             }
+            
         }
         sc.close();
     }
 
-    public static void calculate(double val1, String operand, double val2){
+    public static double calculate(double val1, String operand, double val2){
         double result;
         switch(operand){
             case "+": result = val1 + val2; break;
             case "-": result = val1 - val2; break;
             case "*": result = val1 * val2; break;
             case "/": result = val1 / val2; break;
-            case "=": 
             default: result = 0.0; break;
         }
-
-        if(operand != "=")
-            System.out.printf("Result: %3.2f\n", result);
+        return result;
     }
 }
