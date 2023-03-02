@@ -16,15 +16,21 @@ public class ex_1_5 {
             
             processWord(temp, assoc, numbers);
         }
-
-        int tempValue = 0;
+        System.out.println(numbers.toString());
+        int tempValue = numbers.remove(0);
         int finalResult = 0;
         for(Integer number: numbers){
-            // Contar os valores por ordem e multiplicar até o valor seguinte ser maior que o atual
-            // e quando for menor, somar
+            if(tempValue < number)
+                tempValue *= number;
+            else{
+                finalResult += tempValue;
+                tempValue = number;
+            }
+
         }
-
-
+        finalResult += tempValue; // Sum the last value
+        
+        System.out.println("-> " + finalResult);
         sc.close();
     }
 
