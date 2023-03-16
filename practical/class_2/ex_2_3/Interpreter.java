@@ -15,25 +15,57 @@ public class Interpreter extends CalculatorBaseVisitor<Double> {
 
    @Override public Double visitExprAddSub(CalculatorParser.ExprAddSubContext ctx) {
       Double res = null;
-      return visitChildren(ctx);
-      //return res;
+      Double o1 = visit(ctx.expr(0));
+      Double o2 = visit(ctx.expr(1));
+
+      switch (ctx.op.getText()) {
+         case "+":
+            res = o1 + o2;
+            break;
+
+         case "-":
+            res = o1 - o2;
+            break;
+      
+         default:
+            System.err.println("Opeator invalid");
+            break;
+      }
+
+      return res;
    }
 
    @Override public Double visitExprParent(CalculatorParser.ExprParentContext ctx) {
-      Double res = null;
-      return visitChildren(ctx);
-      //return res;
+      return visit(ctx.expr());
    }
 
    @Override public Double visitExprInteger(CalculatorParser.ExprIntegerContext ctx) {
-      Double res = null;
-      return visitChildren(ctx);
-      //return res;
+      return Double.parseDouble(ctx.Integer().getText());
    }
 
    @Override public Double visitExprMultDivMod(CalculatorParser.ExprMultDivModContext ctx) {
       Double res = null;
-      return visitChildren(ctx);
-      //return res;
+      Double o1 = visit(ctx.expr(0));
+      Double o2 = visit(ctx.expr(1));
+
+      switch (ctx.op.getText()) {
+         case "*":
+            res = o1 * o2;
+            break;
+
+         case "/":
+            res = o1 / o2;
+            break;
+
+         case "%":
+            res = o1 % o2;
+            break;
+      
+         default:
+            System.err.println("Opeator invalid");
+            break;
+      }
+
+      return res;
    }
 }
