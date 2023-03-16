@@ -1,3 +1,4 @@
+// Ex: 1 2 3 + *
 grammar SuffixCalculator;
 program:
 	stat* EOF	// Zero or more repetitions of stat
