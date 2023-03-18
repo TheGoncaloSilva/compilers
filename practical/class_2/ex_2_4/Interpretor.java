@@ -2,26 +2,50 @@
 public class Interpretor extends PreffixCalculatorBaseVisitor<Double> {
 
    @Override public Double visitProgram(PreffixCalculatorParser.ProgramContext ctx) {
-      Double res = null;
       return visitChildren(ctx);
-      //return res;
    }
 
    @Override public Double visitStat(PreffixCalculatorParser.StatContext ctx) {
-      Double res = null;
-      return visitChildren(ctx);
-      //return res;
+      if(ctx.expr() != null){
+         Double res = visit(ctx.expr());
+         System.out.printf("Result: %3.2f \n", res);
+      }
+      
+      return null;
    }
 
    @Override public Double visitExprSuffix(PreffixCalculatorParser.ExprSuffixContext ctx) {
       Double res = null;
-      return visitChildren(ctx);
-      //return res;
+      Double o1 = visit(ctx.expr(0));
+      Double o2 = visit(ctx.expr(1));
+
+      switch (ctx.op.getText()) {
+         case "+":
+            res = o1 + o2;
+            break;
+
+         case "-":
+            res = o1 - o2;
+            break;
+
+         case "*":
+            res = o1 * o2;
+            break;
+
+         case "/":
+            res = o1 / o2;
+            break;
+      
+         default:
+            System.err.println("Opeator invalid");
+            break;
+      }
+
+      return res;
+
    }
 
    @Override public Double visitExprNumber(PreffixCalculatorParser.ExprNumberContext ctx) {
-      Double res = null;
-      return visitChildren(ctx);
-      //return res;
+      return Double.parseDouble(ctx.Number().getText());
    }
 }
