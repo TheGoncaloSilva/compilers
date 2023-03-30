@@ -1,5 +1,11 @@
+import java.util.HashMap;
+
 @SuppressWarnings("CheckReturnValue")
 public class Interpreter extends CalculatorBaseVisitor<Double> {
+
+   private HashMap<String, Double> history= new HashMap<String, Double>();;
+
+   public HashMap<String, Double> getHistory(){ return history; }
 
    @Override public Double visitProgram(CalculatorParser.ProgramContext ctx) {
       return visitChildren(ctx);
@@ -8,9 +14,20 @@ public class Interpreter extends CalculatorBaseVisitor<Double> {
    @Override public Double visitStat(CalculatorParser.StatContext ctx) {
       if(ctx.expr() != null){
          Double res = visit(ctx.expr());
-         System.out.printf("Result: %3.2f \n", res);
-      }
+         if(res != null)
+            System.out.printf("Result: %3.2f \n", res);
+      }else if(ctx.assignment() != null)
+         visit(ctx.assignment());
       return null;
+   }
+
+   @Override public Double visitAssignment(CalculatorParser.AssignmentContext ctx) {
+      String variable = ctx.ID().getText();
+      Double res = visit(ctx.expr());
+      if(res != null){
+         history.put(variable, res);
+      }
+      return res;
    }
 
    @Override public Double visitExprAddSub(CalculatorParser.ExprAddSubContext ctx) {
@@ -28,7 +45,7 @@ public class Interpreter extends CalculatorBaseVisitor<Double> {
             break;
       
          default:
-            System.err.println("Opeator invalid");
+            System.err.println("Invalid Operator");
             break;
       }
 
@@ -39,8 +56,21 @@ public class Interpreter extends CalculatorBaseVisitor<Double> {
       return visit(ctx.expr());
    }
 
+   @Override public Double visitExprUnary(CalculatorParser.ExprUnaryContext ctx) {
+      return ctx.op.getText().equals("-") ? -visit(ctx.expr()) : visit(ctx.expr());
+   }
+
    @Override public Double visitExprInteger(CalculatorParser.ExprIntegerContext ctx) {
       return Double.parseDouble(ctx.Integer().getText());
+   }
+
+   @Override public Double visitExprID(CalculatorParser.ExprIDContext ctx) {
+      if(history.containsKey(ctx.ID().getText()))
+         System.out.println(ctx.ID().getText() + ": " + history.get(ctx.ID().getText()));
+      else
+         System.out.println("Error: Undefined variable");
+
+      return null;
    }
 
    @Override public Double visitExprMultDivMod(CalculatorParser.ExprMultDivModContext ctx) {
@@ -62,7 +92,7 @@ public class Interpreter extends CalculatorBaseVisitor<Double> {
             break;
       
          default:
-            System.err.println("Operator invalid");
+            System.err.println("Opeator invalid");
             break;
       }
 
