@@ -1,3 +1,4 @@
+
 @SuppressWarnings("CheckReturnValue")
 public class Interpreter extends SuffixCalculatorBaseVisitor<Double> {
 
