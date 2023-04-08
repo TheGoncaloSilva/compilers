@@ -1,18 +1,18 @@
 import java.util.HashMap;
 
 @SuppressWarnings("CheckReturnValue")
-public class Compiler extends RationalCalculatorBaseVisitor<Double> {
+public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
 
-   // Hashmpa is created uppon class initialization
-   private HashMap<String, Double> history = new HashMap<String, Double>();
+   // Hashmap is created uppon class initialization
+   private HashMap<String, Fraction> history = new HashMap<String, Fraction>();
 
-   public HashMap<String, Double> getHistory(){ return history; }
+   public HashMap<String, Fraction> getHistory(){ return history; }
 
-   @Override public Double visitProgram(RationalCalculatorParser.ProgramContext ctx) {
+   @Override public Fraction visitProgram(RationalCalculatorParser.ProgramContext ctx) {
       return visitChildren(ctx);
-   }
+}
 
-   @Override public Double visitStat(RationalCalculatorParser.StatContext ctx) {
+   @Override public Fraction visitStat(RationalCalculatorParser.StatContext ctx) {
       if(ctx.print() != null){
          visit(ctx.print());
       }else if(ctx.assignment() != null)
@@ -20,16 +20,16 @@ public class Compiler extends RationalCalculatorBaseVisitor<Double> {
       return null;
    }
 
-   @Override public Double visitAssignment(RationalCalculatorParser.AssignmentContext ctx) {
+   @Override public Fraction visitAssignment(RationalCalculatorParser.AssignmentContext ctx) {
       String variable = ctx.ID().getText();
-      Double res = visit(ctx.expr());
+      Fraction res = visit(ctx.expr());
       if(res != null){
          history.put(variable, res);
       }
       return res;
    }
 
-   @Override public Double visitPrint(RationalCalculatorParser.PrintContext ctx) {
+   @Override public Fraction visitPrint(RationalCalculatorParser.PrintContext ctx) {
       /*// Check if expr is variable
       if (ctx.ID() != null){
          Double res = visit(ctx.expr());
@@ -41,56 +41,87 @@ public class Compiler extends RationalCalculatorBaseVisitor<Double> {
             System.out.printf("Result: %3.2f \n", res);
          return null;
       }*/
-      Double res = visit(ctx.expr());
-      System.out.println("Result: %3.2f \n", res);
+      Fraction res = visit(ctx.expr());
+      if(res != null)
+         System.out.println("Result: " + res.toString());
+      return null;
    }
 
-   @Override public Double visitExprFrac(RationalCalculatorParser.ExprFracContext ctx) {
-      // Because the visitor type is Double, there's no need to have a Converter
-      Double numerator = visit(ctx.expr(0));
-      Double denominator = visit(ctx.expr(1));
-      return numerator / denominator;
+   @Override public Fraction visitExprFrac(RationalCalculatorParser.ExprFracContext ctx) {
+      Integer numerator = Integer.parseInt(ctx.Integer(0).getText());
+      Integer denominator = Integer.parseInt(ctx.Integer(1).getText());
+      return new Fraction(numerator, denominator);
    }
 
-   @Override public Double visitExprAddSub(RationalCalculatorParser.ExprAddSubContext ctx) {
-      Double res = null;
-      return visitChildren(ctx);
-      //return res;
+   @Override public Fraction visitExprAddSub(RationalCalculatorParser.ExprAddSubContext ctx) {
+      Fraction frac1 = visit(ctx.expr(0));
+      Fraction frac2 = visit(ctx.expr(1));
+
+      switch (ctx.op.getText()) {
+         case "+":
+            return Fraction.add(frac1, frac2);
+
+         case "-":
+            return Fraction.sub(frac1, frac2);
+
+         default:
+            System.err.println("Invalid Operator");
+            return null;
+      }
    }
 
-   @Override public Double visitExprParent(RationalCalculatorParser.ExprParentContext ctx) {
+   @Override public Fraction visitExprParent(RationalCalculatorParser.ExprParentContext ctx) {
       return visit(ctx.expr());
    }
 
-   @Override public Double visitExprUnary(RationalCalculatorParser.ExprUnaryContext ctx) {
-      Double res = null;
-      return visitChildren(ctx);
-      //return res;
+   @Override public Fraction visitExprUnary(RationalCalculatorParser.ExprUnaryContext ctx) {
+      Fraction frac = visit(ctx.expr());
+
+      switch (ctx.op.getText()) {
+         case "-":
+            return Fraction.sub(new Fraction(), frac);
+
+         case ":":
+            return frac;
+
+         default:
+            System.err.println("Invalid Operator");
+            return null;
+      }
    }
 
-   @Override public Double visitExprInteger(RationalCalculatorParser.ExprIntegerContext ctx) {
-      return Double.parseDouble(ctx.Integer().getText());
+   @Override public Fraction visitExprMultDiv(RationalCalculatorParser.ExprMultDivContext ctx) {
+      Fraction frac1 = visit(ctx.expr(0));
+      Fraction frac2 = visit(ctx.expr(1));
+
+      switch (ctx.op.getText()) {
+         case "*":
+            return Fraction.mul(frac1, frac2);
+
+         case ":":
+            return Fraction.mul(frac1, frac2);
+
+         default:
+            System.err.println("Invalid Operator");
+            return null;
+      }
    }
 
-   @Override public Double visitExprMultDiv(RationalCalculatorParser.ExprMultDivContext ctx) {
-      Double res = null;
-      return visitChildren(ctx);
-      //return res;
+   @Override public Fraction visitExprInteger(RationalCalculatorParser.ExprIntegerContext ctx) {
+      return new Fraction(Integer.parseInt(ctx.Integer().getText()));
    }
 
-   @Override public Double visitExprReduce(RationalCalculatorParser.ExprReduceContext ctx) {
-      Double res = null;
-      return visitChildren(ctx);
-      //return res;
+   @Override public Fraction visitExprReduce(RationalCalculatorParser.ExprReduceContext ctx) {
+      /******************/
+      return null;
    }
 
-   @Override public Double visitExprID(RationalCalculatorParser.ExprIDContext ctx) {
+   @Override public Fraction visitExprID(RationalCalculatorParser.ExprIDContext ctx) {
       if(history.containsKey(ctx.ID().getText()))
-         System.out.println(ctx.ID().getText() + ": " + history.get(ctx.ID().getText()));
+         System.out.println(ctx.ID().getText() + ": " + history.get(ctx.ID().getText()).toString());
       else
          System.out.println("Error: Undefined variable");
 
       return null;
    }
-
 }
