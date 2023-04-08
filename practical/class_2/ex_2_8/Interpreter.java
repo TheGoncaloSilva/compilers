@@ -3,7 +3,7 @@ import java.util.HashMap;
 @SuppressWarnings("CheckReturnValue")
 public class Interpreter extends SuffixCalculatorBaseVisitor<Double> {
 
-   private HashMap<String, Double> history= new HashMap<String, Double>();;
+   private HashMap<String, Double> history = new HashMap<String, Double>();;
 
    public HashMap<String, Double> getHistory(){ return history; }
 
@@ -92,7 +92,7 @@ public class Interpreter extends SuffixCalculatorBaseVisitor<Double> {
             break;
       
          default:
-            System.err.println("Opeator invalid");
+            System.err.println("Operator invalid");
             break;
       }
 
