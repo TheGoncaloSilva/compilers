@@ -30,17 +30,6 @@ public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
    }
 
    @Override public Fraction visitPrint(RationalCalculatorParser.PrintContext ctx) {
-      /*// Check if expr is variable
-      if (ctx.ID() != null){
-         Double res = visit(ctx.expr());
-         if(res != null)
-            System.out.printf("Value: %3.2f \n", res);
-      } else {
-         Double res = visit(ctx.expr());
-         if(res != null)
-            System.out.printf("Result: %3.2f \n", res);
-         return null;
-      }*/
       Fraction res = visit(ctx.expr());
       if(res != null)
          System.out.println("Result: " + res.toString());
@@ -90,6 +79,12 @@ public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
       }
    }
 
+   @Override public Fraction visitExprPower(RationalCalculatorParser.ExprPowerContext ctx) {
+      Fraction frac = visit(ctx.expr());
+      int power = Integer.parseInt(ctx.Integer().getText());;
+      return Fraction.power(frac, power); 
+   }
+
    @Override public Fraction visitExprMultDiv(RationalCalculatorParser.ExprMultDivContext ctx) {
       Fraction frac1 = visit(ctx.expr(0));
       Fraction frac2 = visit(ctx.expr(1));
@@ -112,8 +107,9 @@ public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
    }
 
    @Override public Fraction visitExprReduce(RationalCalculatorParser.ExprReduceContext ctx) {
-      /******************/
-      return null;
+      Fraction frac = visit(ctx.expr());
+      frac.reduce();
+      return frac;
    }
 
    @Override public Fraction visitExprID(RationalCalculatorParser.ExprIDContext ctx) {

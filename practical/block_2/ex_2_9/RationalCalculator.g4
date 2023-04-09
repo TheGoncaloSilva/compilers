@@ -9,6 +9,7 @@ assignment: expr '->' ID ';';
 print: 'print' expr ';';
 expr :
     expr op=('+'|'-')               #ExprUnary
+    | expr '^' Integer              #ExprPower
     | expr expr op=('*'|':')        #ExprMultDiv
     | expr expr op=('+'|'-')        #ExprAddSub
     | Integer '/' Integer           #ExprFrac

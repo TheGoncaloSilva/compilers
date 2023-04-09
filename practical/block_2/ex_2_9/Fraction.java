@@ -92,6 +92,40 @@ public class Fraction {
         return resultFrac;
     }
 
+    /*
+     * Calculte Power of fraction to a Integer
+     */
+    public static Fraction power(Fraction frac, int power){
+        Fraction resultFrac = new Fraction();
+        resultFrac.numerator = (int) Math.pow((double) frac.numerator, (double) power);
+        resultFrac.denominator = (int) Math.pow((double) frac.denominator, (double) power);
+
+        check_no_div_by_zero(resultFrac);
+
+        return resultFrac;
+    }
+
+    /*
+     * Reduce Fraction
+     */
+    public void reduce(){
+        int gcd = getGCD(getNumerator(), getDenominator());
+        setNumerator(numerator/gcd);
+        setDenominator(denominator/gcd);
+    }
+
+    /*
+     * Function to calculate the greatest common divisor using Euclid's algorithm
+     */
+    public static int getGCD(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+
     public static void check_no_div_by_zero(Fraction frac){
         // Check no div by zero
         if(frac.denominator == 0)
@@ -112,4 +146,5 @@ public class Fraction {
         return (numerator == frac.numerator) && 
                (denominator == frac.denominator);
     }
+
 }
