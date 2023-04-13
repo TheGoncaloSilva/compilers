@@ -49,6 +49,9 @@ public class Fraction {
 
         check_no_div_by_zero(resultFrac);
 
+        // If numerator is zero, denominator doesn't matter
+        resultFrac.denominator = resultFrac.numerator == 0 ? 1 : resultFrac.denominator;
+
         return resultFrac;
     }
 
@@ -63,6 +66,9 @@ public class Fraction {
 
         check_no_div_by_zero(resultFrac);
 
+        // If numerator is zero, denominator doesn't matter
+        resultFrac.denominator = resultFrac.numerator == 0 ? 1 : resultFrac.denominator;
+
         return resultFrac;
     }
 
@@ -75,6 +81,11 @@ public class Fraction {
         resultFrac.denominator = frac1.denominator * frac2.denominator;
 
         check_no_div_by_zero(resultFrac);
+
+        resultFrac.reduce();
+
+        // If numerator is zero, denominator doesn't matter
+        resultFrac.denominator = resultFrac.numerator == 0 ? 1 : resultFrac.denominator;
 
         return resultFrac;
     }
@@ -89,6 +100,9 @@ public class Fraction {
 
         check_no_div_by_zero(resultFrac);
 
+        // If numerator is zero, denominator doesn't matter
+        resultFrac.denominator = resultFrac.numerator == 0 ? 1 : resultFrac.denominator;
+
         return resultFrac;
     }
 
@@ -101,6 +115,9 @@ public class Fraction {
         resultFrac.denominator = (int) Math.pow((double) frac.denominator, (double) power);
 
         check_no_div_by_zero(resultFrac);
+
+        // If numerator is zero, denominator doesn't matter
+        resultFrac.denominator = resultFrac.numerator == 0 ? 1 : resultFrac.denominator;
 
         return resultFrac;
     }
@@ -135,11 +152,8 @@ public class Fraction {
     public String toString(){
         if(denominator == 1 || denominator == -1)
             return Integer.toString(numerator);
-        
-        String result = "";
-        if(numerator < 0 || denominator < 0)
-            result += "-";
-        return result + Integer.toString(numerator) + "/" + Integer.toString(denominator);
+    
+        return Integer.toString(numerator) + "/" + Integer.toString(denominator);
     }
 
     public boolean equals(Fraction frac){

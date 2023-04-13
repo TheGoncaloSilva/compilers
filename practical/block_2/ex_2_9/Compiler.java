@@ -46,6 +46,7 @@ public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
       Fraction frac1 = visit(ctx.expr(0));
       Fraction frac2 = visit(ctx.expr(1));
 
+
       switch (ctx.op.getText()) {
          case "+":
             return Fraction.add(frac1, frac2);
@@ -68,7 +69,8 @@ public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
 
       switch (ctx.op.getText()) {
          case "-":
-            return Fraction.sub(new Fraction(), frac);
+            frac.setNumerator(frac.getNumerator()*-1);
+            return frac;
 
          case ":":
             return frac;
@@ -114,10 +116,12 @@ public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
 
    @Override public Fraction visitExprID(RationalCalculatorParser.ExprIDContext ctx) {
       if(history.containsKey(ctx.ID().getText()))
-         System.out.println(ctx.ID().getText() + ": " + history.get(ctx.ID().getText()).toString());
-      else
+         return history.get(ctx.ID().getText());
+      else{
          System.out.println("Error: Undefined variable");
+         return null;
+      }
 
-      return null;
+      
    }
 }
