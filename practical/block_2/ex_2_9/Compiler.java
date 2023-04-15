@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Scanner;
 
 @SuppressWarnings("CheckReturnValue")
 public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
@@ -10,7 +11,7 @@ public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
 
    @Override public Fraction visitProgram(RationalCalculatorParser.ProgramContext ctx) {
       return visitChildren(ctx);
-}
+   }
 
    @Override public Fraction visitStat(RationalCalculatorParser.StatContext ctx) {
       if(ctx.print() != null){
@@ -46,7 +47,6 @@ public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
       Fraction frac1 = visit(ctx.expr(0));
       Fraction frac2 = visit(ctx.expr(1));
 
-
       switch (ctx.op.getText()) {
          case "+":
             return Fraction.add(frac1, frac2);
@@ -58,6 +58,16 @@ public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
             System.err.println("Invalid Operator");
             return null;
       }
+   }
+
+   @Override public Fraction visitExprRead(RationalCalculatorParser.ExprReadContext ctx) {
+      String variable = ctx.ID().getText();
+      // This part should be improved
+      Scanner sc = new Scanner(System.in);
+      int value = sc.nextInt();
+      Fraction res = new Fraction(value);
+      history.put(variable, res);
+      return res;
    }
 
    @Override public Fraction visitExprParent(RationalCalculatorParser.ExprParentContext ctx) {
@@ -81,12 +91,6 @@ public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
       }
    }
 
-   @Override public Fraction visitExprPower(RationalCalculatorParser.ExprPowerContext ctx) {
-      Fraction frac = visit(ctx.expr());
-      int power = Integer.parseInt(ctx.Integer().getText());;
-      return Fraction.power(frac, power); 
-   }
-
    @Override public Fraction visitExprMultDiv(RationalCalculatorParser.ExprMultDivContext ctx) {
       Fraction frac1 = visit(ctx.expr(0));
       Fraction frac2 = visit(ctx.expr(1));
@@ -108,10 +112,10 @@ public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
       return new Fraction(Integer.parseInt(ctx.Integer().getText()));
    }
 
-   @Override public Fraction visitExprReduce(RationalCalculatorParser.ExprReduceContext ctx) {
+   @Override public Fraction visitExprPower(RationalCalculatorParser.ExprPowerContext ctx) {
       Fraction frac = visit(ctx.expr());
-      frac.reduce();
-      return frac;
+      int power = Integer.parseInt(ctx.Integer().getText());;
+      return Fraction.power(frac, power); 
    }
 
    @Override public Fraction visitExprID(RationalCalculatorParser.ExprIDContext ctx) {
@@ -121,7 +125,11 @@ public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
          System.out.println("Error: Undefined variable");
          return null;
       }
+   }
 
-      
+   @Override public Fraction visitExprReduce(RationalCalculatorParser.ExprReduceContext ctx) {
+      Fraction frac = visit(ctx.expr());
+      frac.reduce();
+      return frac;
    }
 }

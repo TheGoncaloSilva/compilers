@@ -14,6 +14,7 @@ expr :
     | expr op=('+'|'-') expr            #ExprAddSub
     | Integer '/' Integer               #ExprFrac
     | Integer                           #ExprInteger
+    | 'read' '"' ID '"'                 #ExprRead
     | ID                                #ExprID
     | '(' expr ')'                      #ExprParent
     | 'reduce' expr                     #ExprReduce
