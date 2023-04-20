@@ -67,6 +67,7 @@ public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
       int value = sc.nextInt();
       Fraction res = new Fraction(value);
       history.put(variable, res);
+      sc.close();
       return res;
    }
 
