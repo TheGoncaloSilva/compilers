@@ -24,3 +24,5 @@ hs_err_pid*
 
 # Antlr4 files
 .antl
+
+hidden

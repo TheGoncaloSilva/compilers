@@ -4,7 +4,7 @@ import java.util.Scanner;
 @SuppressWarnings("CheckReturnValue")
 public class Compiler extends RationalCalculatorBaseVisitor<Fraction> {
 
-   // Hashmap is created uppon class initialization
+   // Hashmap is created upon class initialization
    private HashMap<String, Fraction> history = new HashMap<String, Fraction>();
 
    public HashMap<String, Fraction> getHistory(){ return history; }
