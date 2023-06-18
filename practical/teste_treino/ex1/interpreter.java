@@ -17,25 +17,16 @@ public class interpreter extends StrLangBaseVisitor<String> {
    }
 
    @Override public String visitPrint(StrLangParser.PrintContext ctx) {
-      if(ctx.String() != null) {
-         System.out.println(ctx.String().getText());
-      }else {
-         String var = ctx.ID().getText();
-         if(vars.containsKey(var)){
-            System.out.println(vars.get(var));
-         }else{
-            throw new RuntimeException("Variable not found");
-         }
+      String res = visit(ctx.expr());
+      if(res != null){
+         System.out.println(res);
       }
-
       return null;
    }
    
-
    @Override public String visitRegularAttr(StrLangParser.RegularAttrContext ctx) {
       String var = ctx.ID().getText();
-      String value = ctx.String().getText();
-      value = value.substring(1, value.length() - 1); // remove ""
+      String value = visit(ctx.expr());
       vars.put(var, value);
       
       return null;
@@ -44,7 +35,8 @@ public class interpreter extends StrLangBaseVisitor<String> {
    @Override public String visitInputAttr(StrLangParser.InputAttrContext ctx) {
       Scanner sc = new Scanner(System.in);
       String prompt = ctx.String().getText();
-      prompt = prompt.substring(1, prompt.length() - 1); // remove ""
+      if(prompt.startsWith("\"") && prompt.endsWith("\""))
+         prompt = prompt.substring(1, prompt.length() - 1); // remove ""
       String var = ctx.ID().getText();
       System.out.print(prompt);
       String res = sc.nextLine();
@@ -54,5 +46,22 @@ public class interpreter extends StrLangBaseVisitor<String> {
       sc.close();
 
       return null;
+   }
+
+   @Override public String visitExprID(StrLangParser.ExprIDContext ctx) {
+      String var = ctx.ID().getText();
+      if(vars.containsKey(var)){
+         return vars.get(var);
+      }else{
+         throw new RuntimeException("Variable not found");
+      }
+   }
+
+   @Override public String visitExprStr(StrLangParser.ExprStrContext ctx) {
+      String value = ctx.String().getText();
+      if(value.startsWith("\"") && value.endsWith("\""))
+         value = value.substring(1, value.length() - 1); // remove ""
+      
+      return value;
    }
 }

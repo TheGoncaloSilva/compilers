@@ -1,17 +1,22 @@
 grammar StrLang;
 program: stat* EOF;
 stat: 
-      print 
-    | attr
-    ;
-
-print: 
-      'print' (ID | String)
+    attr 
+    | print
     ;
 
 attr: 
-      ID ':' String         # regularAttr
-    | ID ':' 'input(' String ')' # inputAttr
+    ID ':' expr                     # regularAttr
+    | ID ':' 'input(' String ')'    # inputAttr
+    ;
+
+print: 
+    'print' expr
+    ;
+
+expr:
+    ID                              # exprID
+    | String                          # exprStr
     ;
 
 ID: [a-zA-Z_]+[a-zA-Z_0-9]*;
