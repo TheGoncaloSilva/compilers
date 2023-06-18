@@ -6,8 +6,8 @@ stat:
     ;
 
 attr: 
-    ID ':' expr                     # regularAttr
-    | ID ':' 'input(' String ')'    # inputAttr
+    ID ':' expr                         # regularAttr
+    | ID ':' 'input(' String ')'        # inputAttr
     ;
 
 print: 
@@ -15,8 +15,12 @@ print:
     ;
 
 expr:
-    ID                              # exprID
-    | String                          # exprStr
+    expr op=('+'|'-') expr              # exprAddSum
+    | 'trim' expr                       # exprTrim
+    | expr '/' expr '/' expr          # exprSubs
+    | ID                                # exprID
+    | '(' expr ')'                      # exprOpen
+    | String                            # exprStr
     ;
 
 ID: [a-zA-Z_]+[a-zA-Z_0-9]*;

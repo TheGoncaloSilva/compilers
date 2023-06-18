@@ -6,6 +6,8 @@ public class interpreter extends StrLangBaseVisitor<String> {
 
    private HashMap<String, String> vars = new HashMap<String, String>();
 
+   private Scanner sc = new Scanner(System.in);
+
    public HashMap<String, String> getVars() { return vars; }
 
    @Override public String visitProgram(StrLangParser.ProgramContext ctx) {
@@ -33,7 +35,6 @@ public class interpreter extends StrLangBaseVisitor<String> {
    }
 
    @Override public String visitInputAttr(StrLangParser.InputAttrContext ctx) {
-      Scanner sc = new Scanner(System.in);
       String prompt = ctx.String().getText();
       if(prompt.startsWith("\"") && prompt.endsWith("\""))
          prompt = prompt.substring(1, prompt.length() - 1); // remove ""
@@ -43,9 +44,43 @@ public class interpreter extends StrLangBaseVisitor<String> {
 
       vars.put(var, res);
 
-      sc.close();
-
       return null;
+   }
+
+   @Override public String visitExprAddSum(StrLangParser.ExprAddSumContext ctx) {
+      String op1 = visit(ctx.expr(0));
+      String op2 = visit(ctx.expr(1));
+      String res = null;
+      switch(ctx.op.getText()){
+         case "+":
+            res = op1 + op2;
+            break;
+         case "-":
+            res = op1.replace(op2, "");
+            break;
+         default:
+            throw new RuntimeException("Unknown operator");
+      }
+
+      return res;
+   }
+
+   @Override public String visitExprTrim(StrLangParser.ExprTrimContext ctx) {
+      String res = visit(ctx.expr());
+      res = res.trim();
+      return res;
+   }
+
+   @Override public String visitExprOpen(StrLangParser.ExprOpenContext ctx) {
+      return visit(ctx.expr());
+   }
+
+   @Override public String visitExprSubs(StrLangParser.ExprSubsContext ctx) {
+      String text = visit(ctx.expr(0));
+      String substring = visit(ctx.expr(1));
+      String replacing = visit(ctx.expr(2));
+      String res = text.replace(substring, replacing);
+      return res;
    }
 
    @Override public String visitExprID(StrLangParser.ExprIDContext ctx) {
