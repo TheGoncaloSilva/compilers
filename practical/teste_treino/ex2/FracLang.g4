@@ -18,7 +18,7 @@ display:
 
 expr:
     'read' STRING                   # exprRead
-    | 'reduce' expr                   # exprReduce
+    | 'reduce' expr                 # exprReduce
     | op=('+'|'-') expr             # exprUnary
     | expr op=('*'|':') expr        # exprMulDiv
     | expr op=('+'|'-') expr        # exprAddSub
@@ -30,7 +30,7 @@ expr:
 
 fraction: 
     NUMBER '/' NUMBER               # regularFrac
-| NUMBER                            # singleFrac
+    | NUMBER                        # singleFrac
     ;
 
 ID: [a-z]+[a-z]*;
