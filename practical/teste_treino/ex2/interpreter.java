@@ -9,13 +9,14 @@ public class interpreter extends FracLangBaseVisitor<Fraction> {
    private Scanner sc = new Scanner(System.in);
 
    @Override public Fraction visitProgram(FracLangParser.ProgramContext ctx) {
+      /*for(FracLangParser.StatContext stat : ctx.stat()){
+         Fraction res = visit(stat);
+      }*/
       return visitChildren(ctx);
    }
 
    @Override public Fraction visitStat(FracLangParser.StatContext ctx) {
-      Fraction res = null;
       return visitChildren(ctx);
-      //return res;
    }
 
    @Override public Fraction visitAssign(FracLangParser.AssignContext ctx) {
@@ -33,9 +34,16 @@ public class interpreter extends FracLangBaseVisitor<Fraction> {
    }
 
    @Override public Fraction visitExprRead(FracLangParser.ExprReadContext ctx) {
-      Fraction res = null;
-      return visitChildren(ctx);
-      //return res;
+      System.out.print(ctx.STRING().getText().substring(1, ctx.STRING().getText().length()-1));
+      String read = sc.nextLine();
+      read = read.trim();
+      if(read.contains("/")){
+         String[] readArr = read.split("/");
+         int num = Integer.parseInt(readArr[0]);
+         int den = Integer.parseInt(readArr[1]);
+         return new Fraction(num, den);
+      }else
+         return new Fraction(Integer.parseInt(read));
    }
 
    @Override public Fraction visitExprAddSub(FracLangParser.ExprAddSubContext ctx) {
