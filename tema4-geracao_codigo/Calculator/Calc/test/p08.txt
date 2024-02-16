@@ -1,3 +1,0 @@
-l: integer;
-10 -> l;
-if l /= 10 then show 2*l; else show l//2; end;

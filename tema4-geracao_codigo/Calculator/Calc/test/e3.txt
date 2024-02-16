@@ -1,4 +1,0 @@
-a:real;
-a:boolean;
-b,c,a:integer;
-a:real;
